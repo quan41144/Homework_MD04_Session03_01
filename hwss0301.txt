@@ -1,0 +1,37 @@
+1. Customer Service
+- Entity:
++ Customer:
+id: Long, primary key
+fullName: String, not null
+email: String, not null, unique
+password: String, not null
+address: String, not null
+
+2. Product Service
+- Entity:
++ Product:
+id: Long, primary key
+name: String, not null
+price: Double (numeric(10,2) default 0.00), not null
+stockQuantity: Integer, not null
+description: String
+
+3. Order Service
+- Entity:
++ Order:
+id: Long, primary key (OneToMany List<OrderItem> orderItems)
+customerId: Long, not null
+orderDate: LocalDateTime (timestamp default current_timestamp), not null
+totalAmount: Double (numeric(10,2) default 0.00), not null
+status: (String/Enum) (PENDING/SUCCESS/CANCLE)
+
++ OrderItem:
+id: Long, primary key
+orderId: Long, not null (ManyToOne JoinColumn("id"))
+productId: Long, not null
+quantity: Integer, not null (int default 0)
+price:Double, not null (numeric(10,2) default 0.00)
+
+Giải thích lý do tại sao Order chỉ nên lưu customerId mà không lưu cả đối tượng Customer:
+- Vì để giảm bộ nhớ lưu trữ, tránh lộ thông tin nhạy cảm của khách hàng, đặc biệt khi cập nhật dữ liệu của người dùng thì phải cập nhật cả Order-Service, nếu không thì khi cập nhật
+dữ liệu bên Customer-Service thì bên Order-Service sẽ không còn đúng thông tin của khách hàng, khi truy xuất dữ liệu sẽ khiến bị sai lệch và dẫn đến không tìm thấy dữ liệu.
